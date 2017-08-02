@@ -142,10 +142,7 @@ declare module "http2" {
   // Public API
   ////////////////////////////////////////////////////////////////
 
-  export var constants: {
-    [constant: string]: string;
-    [constant: string]: number;
-  };
+  export const constants: Object; /* TODO */
 
   export function getDefaultSettings(): Settings;
   export function getPackedSettings(): Settings;

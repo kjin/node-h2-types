@@ -15,7 +15,6 @@ const eventObjects = {
   ],
   Http2Stream: [
     { event: 'aborted', args: [] },
-    { event: 'error', args: ['err: Error'] },
     { event: 'frameError', args: ['frameType: number', 'errorCode: number'] },
     { event: 'streamClosed', args: ['code: number'] },
     { event: 'timeout', args: [] },
