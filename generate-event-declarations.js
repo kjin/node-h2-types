@@ -18,12 +18,37 @@ const eventObjects = {
     { event: 'frameError', args: ['frameType: number', 'errorCode: number'] },
     { event: 'streamClosed', args: ['code: number'] },
     { event: 'timeout', args: [] },
-    { event: 'trailers', args: ['headers: Headers', 'flags: number'] }
+    { event: 'trailers', args: ['trailers: Trailers', 'flags: number'] }
   ],
   ClientHttp2Stream: [
     { event: 'headers', args: ['headers: Headers', 'flags: number'] },
     { event: 'push', args: ['headers: Headers', 'flags: number'] },
     { event: 'response', args: ['headers: Headers', 'flags: number'] }
+  ],
+  Http2Server: [
+    { event: 'request', args: ['request: Http2ServerRequest', 'response: Http2ServerResponse'] },
+    { event: 'sessionError', args: ['err: Error'] },
+    { event: 'socketError', args: ['err: Error'] },
+    { event: 'stream', args: ['stream: Stream', 'headers: Headers', 'flags: number'] },
+    { event: 'timeout', args: [] }
+  ],
+  Http2SecureServer: [
+    { event: 'request', args: ['request: Http2ServerRequest', 'response: Http2ServerResponse'] },
+    { event: 'sessionError', args: ['err: Error'] },
+    { event: 'socketError', args: ['err: Error'] },
+    { event: 'stream', args: ['stream: Stream', 'headers: Headers', 'flags: number'] },
+    { event: 'timeout', args: [] },
+    { event: 'unknownProtocol', args: ['socket: tls.TLSSocket'] }
+  ],
+  Http2ServerRequest: [
+    { event: 'aborted', args: ['hadError: boolean', 'code: number'] }
+  ],
+  Http2ServerResponse: [
+    { event: 'aborted', args: ['hadError: boolean', 'code: number'] },
+    { event: 'close', args: [] },
+    { event: 'drain', args: [] },
+    { event: 'error', args: ['error: Error'] },
+    { event: 'finish', args: [] }
   ]
 }
 
