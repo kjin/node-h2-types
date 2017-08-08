@@ -221,7 +221,7 @@ declare module "http2" {
   // Public API
   ////////////////////////////////////////////////////////////////
 
-  // $ node generate-constants.js
+  // $ echo '$NODE_H2 --expose-http2 generate-constants.js' | bash
 
   export function getDefaultSettings(): Settings;
   export function getPackedSettings(): Settings;
