@@ -9,7 +9,7 @@ const eventObjects = {
     { event: 'goaway', args: ['errorCode: number', 'lastStreamID: number', 'opaqueData: Buffer'] },
     { event: 'localSettings', args: ['settings: Settings'] },
     { event: 'remoteSettings', args: ['settings: Settings'] },
-    { event: 'stream', args: ['stream: Stream', 'headers: Headers', 'flags: number'] },
+    { event: 'stream', args: ['stream: Http2Stream', 'headers: Headers', 'flags: number'] },
     { event: 'socketError', args: ['err: Error'] },
     { event: 'timeout', args: [] }
   ],
@@ -29,14 +29,14 @@ const eventObjects = {
     { event: 'request', args: ['request: Http2ServerRequest', 'response: Http2ServerResponse'] },
     { event: 'sessionError', args: ['err: Error'] },
     { event: 'socketError', args: ['err: Error'] },
-    { event: 'stream', args: ['stream: Stream', 'headers: Headers', 'flags: number'] },
+    { event: 'stream', args: ['stream: ServerHttp2Stream', 'headers: Headers', 'flags: number'] },
     { event: 'timeout', args: [] }
   ],
   Http2SecureServer: [
     { event: 'request', args: ['request: Http2ServerRequest', 'response: Http2ServerResponse'] },
     { event: 'sessionError', args: ['err: Error'] },
     { event: 'socketError', args: ['err: Error'] },
-    { event: 'stream', args: ['stream: Stream', 'headers: Headers', 'flags: number'] },
+    { event: 'stream', args: ['stream: ServerHttp2Stream', 'headers: Headers', 'flags: number'] },
     { event: 'timeout', args: [] },
     { event: 'unknownProtocol', args: ['socket: tls.TLSSocket'] }
   ],
