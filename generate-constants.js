@@ -67,7 +67,7 @@ const result = `export const constants: {\n  ${
     if (satisfiedCategories.length !== 1) {
       throw new Error(`# of categories satisfying ${key}: ${satisfiedCategories.length}`)
     }
-    acc.push(`${key}: ${categoryFilters[satisfiedCategories[0]].type}`)
+    acc.push(`${key}: ${categoryFilters[satisfiedCategories[0]].type};`)
     return acc
   }, []).join('\n  ')
 }\n};`

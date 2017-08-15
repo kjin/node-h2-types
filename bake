@@ -16,6 +16,15 @@ const dts = readFileSync('_index.d.ts', 'utf8')
     })
     return execResult.trim().split('\n').map(l => `${prefix}${l}`).join('\n')
   })
+  .map(line => {
+    const matches = line.match(/(\s+)[^\s]/)
+    if (!matches) {
+      return line
+    }
+    const [_0, indent] = matches
+    return indent + line
+  })
+  .filter(line => !line.match(/\s+\/\/\/\//))
   .join('\n')
 
 writeFileSync('index.d.ts', dts, 'utf8')
