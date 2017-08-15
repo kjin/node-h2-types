@@ -1,9 +1,10 @@
 #!/usr/bin/env node
+const [ _bin, _script, flag ] = process.argv
 
 const { readFileSync, writeFileSync } = require('fs')
 const { execSync } = require('child_process')
 
-const dts = readFileSync('_index.d.ts', 'utf8')
+const http2Dts = readFileSync('_index.d.ts', 'utf8')
   .split('\n')
   .map(line => {
     const matches = line.match(/(\s+)\/\/\s\$\s(.*)/)
@@ -16,11 +17,9 @@ const dts = readFileSync('_index.d.ts', 'utf8')
     })
     return execResult.trim().split('\n').map(l => `${prefix}${l}`)
   })
-  .reduce((acc, lines) => {
-    return acc.concat(lines);
-  }, [])
+  .reduce((acc, lines) => acc.concat(lines), [])
   .map(line => {
-    const matches = line.match(/(\s+)[^\s]/)
+    const matches = line.match(/^(\s+)[^\s]/)
     if (!matches) {
       return line
     }
@@ -31,4 +30,14 @@ const dts = readFileSync('_index.d.ts', 'utf8')
   .map(line => line.replace(/\s+$/, ''))
   .join('\n')
 
-writeFileSync('index.d.ts', dts, 'utf8')
+const defTypedRemotePrefix = 'https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master'
+const suffix = 'types/node/index.d.ts'
+
+if (flag === '-e') {
+  const nodeDts = process.env.DEFINITELY_TYPED ?
+    execSync(`git show master:${suffix}`, { cwd: process.env.DEFINITELY_TYPED }) :
+    execSync(`curl ${defTypedRemotePrefix}/${suffix}`)
+  writeFileSync('index.d.ts', [nodeDts, http2Dts].join('\n'), 'utf8')
+} else {
+  writeFileSync('index.d.ts', http2Dts, 'utf8')
+}
