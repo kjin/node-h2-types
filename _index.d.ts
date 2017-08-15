@@ -44,7 +44,7 @@ declare module "http2" {
     offset?: number;
     length?: number;
   }
-  
+
   export interface Http2Stream extends stream.Duplex {
     readonly aborted: boolean;
     readonly destroyed: boolean;
@@ -103,7 +103,7 @@ declare module "http2" {
     graceful?: boolean;
     errorCode?: number;
     lastStreamID?: number;
-    opaqueData?: Buffer | Array<number>;
+    opaqueData?: Buffer | number[];
   }
 
   export interface SessionState {
@@ -186,8 +186,8 @@ declare module "http2" {
     headers: Headers;
     httpVersion: string;
     method: string;
-    rawHeaders: Array<string>;
-    rawTrailers: Array<string>;
+    rawHeaders: string[];
+    rawTrailers: string[];
     setTimeout(msecs: number, callback?: () => void): void;
     socket: net.Socket | tls.TLSSocket;
     stream: ServerHttp2Stream;
@@ -205,13 +205,13 @@ declare module "http2" {
     end(data?: string | Buffer, encoding?: string, callback?: () => void): void;
     finished: boolean;
     getHeader(name: string): string;
-    getHeaderNames(): Array<string>;
+    getHeaderNames(): string[];
     getHeaders(): Headers;
     hasHeader(name: string): boolean;
     readonly headersSent: boolean;
     removeHeader(name: string): void;
     sendDate: boolean;
-    setHeader(name: string, value: string | Array<string>): void;
+    setHeader(name: string, value: string | string[]): void;
     setTimeout(msecs: number, callback?: () => void): void;
     socket: net.Socket | tls.TLSSocket;
     statusCode: number;
