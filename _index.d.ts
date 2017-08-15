@@ -7,7 +7,6 @@ declare module "http2" {
   import * as url from "url";
 
   type Headers = Object;
-  type Trailers = Headers;
 
   ////////////////////////////////////////////////////////////////
   // Http2Stream
@@ -31,7 +30,7 @@ declare module "http2" {
 
   export interface ServerStreamResponseOptions {
     endStream?: boolean;
-    getTrailers?: (trailers: Trailers) => void;
+    getTrailers?: (trailers: Headers) => void;
   }
 
   export interface StatOptions {
@@ -41,7 +40,7 @@ declare module "http2" {
 
   export interface ServerStreamFileResponseOptions {
     statCheck?: (stats: fs.Stats, headers: Headers, statOptions: StatOptions) => void;
-    getTrailers?: (trailers: Trailers) => void;
+    getTrailers?: (trailers: Headers) => void;
     offset?: number;
     length?: number;
   }
@@ -97,7 +96,7 @@ declare module "http2" {
     exclusive?: boolean;
     parent?: number;
     weight?: number;
-    getTrailers?: (trailers: Trailers, flags: number) => void;
+    getTrailers?: (trailers: Headers, flags: number) => void;
   }
 
   export interface SessionShutdownOptions {
@@ -133,7 +132,7 @@ declare module "http2" {
     readonly state: SessionState;
     priority(stream: Http2Stream, options: StreamPriorityOptions): void;
     settings(settings: Settings): void;
-    readonly type: number; /* TODO */
+    readonly type: number;
 
     // $ node generate-event-declarations.js Http2Session
   }
@@ -150,8 +149,29 @@ declare module "http2" {
   // Http2Server
   ////////////////////////////////////////////////////////////////
 
-  export interface ServerOptions { /*TODO*/ }
-  export interface SecureServerOptions extends ServerOptions { /*TODO*/ }
+  export interface SessionOptions {
+    maxDeflateDynamicTableSize?: number;
+    maxReservedRemoteStreams?: number;
+    maxSendHeaderBlockLength?: number;
+    paddingStrategy?: number;
+    peerMaxConcurrentStreams?: number;
+    selectPadding?: (frameLen: number, maxFrameLen: number) => number;
+    settings?: Settings;
+  }
+
+  export type ClientSessionOptions = SessionOptions;
+  export type ServerSessionOptions = SessionOptions;
+
+  export type SecureClientSessionOptions = ClientSessionOptions & tls.ConnectionOptions;
+  export type SecureServerSessionOptions = ClientSessionOptions & tls.TlsOptions;
+
+  export interface ServerOptions extends ServerSessionOptions {
+    allowHTTP1?: boolean;
+  }
+
+  export interface SecureServerOptions extends ServerSessionOptions {
+    allowHTTP1?: boolean;
+  }
 
   export interface Http2Server extends net.Server {
     // $ node generate-event-declarations.js Http2Server
@@ -171,18 +191,18 @@ declare module "http2" {
     setTimeout(msecs: number, callback?: () => void): void;
     socket: net.Socket | tls.TLSSocket;
     stream: ServerHttp2Stream;
-    trailers: Trailers;
+    trailers: Headers;
     url: string;
 
     // $ node generate-event-declarations.js Http2ServerRequest
   }
 
   export interface Http2ServerResponse extends events.EventEmitter {
-    addTrailers(trailers: Trailers);
+    addTrailers(trailers: Headers): void;
     connection: net.Socket | tls.TLSSocket;
-    end(callback?: () => void);
-    end(data?: string | Buffer, callback?: () => void);
-    end(data?: string | Buffer, encoding?: string, callback?: () => void);
+    end(callback?: () => void): void;
+    end(data?: string | Buffer, callback?: () => void): void;
+    end(data?: string | Buffer, encoding?: string, callback?: () => void): void;
     finished: boolean;
     getHeader(name: string): string;
     getHeaderNames(): Array<string>;
@@ -207,16 +227,6 @@ declare module "http2" {
     // $ node generate-event-declarations.js Http2ServerResponse
   }
 
-  export interface ClientSessionOptions {
-    maxDeflateDynamicTableSize?: number;
-    maxReservedRemoteStreams?: number;
-    maxSendHeaderBlockLength?: number;
-    paddingStrategy?: number;
-    peerMaxConcurrentStreams?: number;
-    selectPadding?: (frameLen: number, maxFrameLen: number) => number;
-    settings?: Settings;
-  }
-
   ////////////////////////////////////////////////////////////////
   // Public API
   ////////////////////////////////////////////////////////////////
@@ -233,6 +243,6 @@ declare module "http2" {
   export function createSecureServer(onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2Server;
   export function createSecureServer(options: SecureServerOptions, onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2Server;
 
-  export function connect(authority: string | URL, listener?: (session: ClientHttp2Session, socket: net.Socket | tls.TLSSocket) => void): ClientHttp2Session;
-  export function connect(authority: string | URL, options?: ClientSessionOptions, listener?: (session: ClientHttp2Session, socket: net.Socket | tls.TLSSocket) => void): ClientHttp2Session;
+  export function connect(authority: string | url.URL, listener?: (session: ClientHttp2Session, socket: net.Socket | tls.TLSSocket) => void): ClientHttp2Session;
+  export function connect(authority: string | url.URL, options?: ClientSessionOptions | SecureClientSessionOptions, listener?: (session: ClientHttp2Session, socket: net.Socket | tls.TLSSocket) => void): ClientHttp2Session;
 }

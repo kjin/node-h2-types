@@ -18,7 +18,7 @@ const eventObjects = {
     { event: 'frameError', args: ['frameType: number', 'errorCode: number'] },
     { event: 'streamClosed', args: ['code: number'] },
     { event: 'timeout', args: [] },
-    { event: 'trailers', args: ['trailers: Trailers', 'flags: number'] }
+    { event: 'trailers', args: ['trailers: Headers', 'flags: number'] }
   ],
   ClientHttp2Stream: [
     { event: 'headers', args: ['headers: Headers', 'flags: number'] },
