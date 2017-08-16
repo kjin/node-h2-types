@@ -9,7 +9,7 @@ const eventObjects = {
     { event: 'goaway', args: ['errorCode: number', 'lastStreamID: number', 'opaqueData: Buffer'] },
     { event: 'localSettings', args: ['settings: Settings'] },
     { event: 'remoteSettings', args: ['settings: Settings'] },
-    { event: 'stream', args: ['stream: Http2Stream', 'headers: Headers', 'flags: number'] },
+    { event: 'stream', args: ['stream: Http2Stream', 'headers: IncomingHttpHeaders', 'flags: number'] },
     { event: 'socketError', args: ['err: Error'] },
     { event: 'timeout', args: [] }
   ],
@@ -18,25 +18,25 @@ const eventObjects = {
     { event: 'frameError', args: ['frameType: number', 'errorCode: number'] },
     { event: 'streamClosed', args: ['code: number'] },
     { event: 'timeout', args: [] },
-    { event: 'trailers', args: ['trailers: Headers', 'flags: number'] }
+    { event: 'trailers', args: ['trailers: IncomingHttpHeaders', 'flags: number'] }
   ],
   ClientHttp2Stream: [
-    { event: 'headers', args: ['headers: Headers', 'flags: number'] },
-    { event: 'push', args: ['headers: Headers', 'flags: number'] },
-    { event: 'response', args: ['headers: Headers', 'flags: number'] }
+    { event: 'headers', args: ['headers: IncomingHttpHeaders', 'flags: number'] },
+    { event: 'push', args: ['headers: IncomingHttpHeaders', 'flags: number'] },
+    { event: 'response', args: ['headers: IncomingHttpHeaders', 'flags: number'] }
   ],
   Http2Server: [
     { event: 'request', args: ['request: Http2ServerRequest', 'response: Http2ServerResponse'] },
     { event: 'sessionError', args: ['err: Error'] },
     { event: 'socketError', args: ['err: Error'] },
-    { event: 'stream', args: ['stream: ServerHttp2Stream', 'headers: Headers', 'flags: number'] },
+    { event: 'stream', args: ['stream: ServerHttp2Stream', 'headers: IncomingHttpHeaders', 'flags: number'] },
     { event: 'timeout', args: [] }
   ],
   Http2SecureServer: [
     { event: 'request', args: ['request: Http2ServerRequest', 'response: Http2ServerResponse'] },
     { event: 'sessionError', args: ['err: Error'] },
     { event: 'socketError', args: ['err: Error'] },
-    { event: 'stream', args: ['stream: ServerHttp2Stream', 'headers: Headers', 'flags: number'] },
+    { event: 'stream', args: ['stream: ServerHttp2Stream', 'headers: IncomingHttpHeaders', 'flags: number'] },
     { event: 'timeout', args: [] },
     { event: 'unknownProtocol', args: ['socket: tls.TLSSocket'] }
   ],

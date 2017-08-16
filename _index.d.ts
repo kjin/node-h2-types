@@ -6,8 +6,12 @@ declare module "http2" {
   import * as tls from "tls";
   import * as url from "url";
 
-  export interface Headers {
+  export interface IncomingHttpHeaders {
     [headerField: string]: string | string[];
+  }
+  
+  export interface OutgoingHttpHeaders {
+    [headerField: string]: number | string | string[] | undefined;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -32,7 +36,7 @@ declare module "http2" {
 
   export interface ServerStreamResponseOptions {
     endStream?: boolean;
-    getTrailers?: (trailers: Headers) => void;
+    getTrailers?: (trailers: IncomingHttpHeaders) => void;
   }
 
   export interface StatOptions {
@@ -41,8 +45,8 @@ declare module "http2" {
   }
 
   export interface ServerStreamFileResponseOptions {
-    statCheck?: (stats: fs.Stats, headers: Headers, statOptions: StatOptions) => void;
-    getTrailers?: (trailers: Headers) => void;
+    statCheck?: (stats: fs.Stats, headers: IncomingHttpHeaders, statOptions: StatOptions) => void;
+    getTrailers?: (trailers: IncomingHttpHeaders) => void;
     offset?: number;
     length?: number;
   }
@@ -70,14 +74,14 @@ declare module "http2" {
   }
 
   export interface ServerHttp2Stream extends Http2Stream {
-    additionalHeaders(headers: Headers): void;
+    additionalHeaders(headers: OutgoingHttpHeaders): void;
     readonly headersSent: boolean;
     readonly pushAllowed: boolean;
-    pushStream(headers: Headers, callback?: (pushStream: ServerHttp2Stream) => void): void;
-    pushStream(headers: Headers, options?: StreamPriorityOptions, callback?: (pushStream: ServerHttp2Stream) => void): void;
-    respond(headers?: Headers, options?: ServerStreamResponseOptions): void;
-    respondWithFD(fd: number, headers?: Headers, options?: ServerStreamResponseOptions): void;
-    respondWithFD(path: string, headers?: Headers, options?: ServerStreamResponseOptions): void;
+    pushStream(headers: OutgoingHttpHeaders, callback?: (pushStream: ServerHttp2Stream) => void): void;
+    pushStream(headers: OutgoingHttpHeaders, options?: StreamPriorityOptions, callback?: (pushStream: ServerHttp2Stream) => void): void;
+    respond(headers?: OutgoingHttpHeaders, options?: ServerStreamResponseOptions): void;
+    respondWithFD(fd: number, headers?: OutgoingHttpHeaders, options?: ServerStreamResponseOptions): void;
+    respondWithFD(path: string, headers?: OutgoingHttpHeaders, options?: ServerStreamResponseOptions): void;
   }
 
   ////////////////////////////////////////////////////////////////
@@ -98,7 +102,7 @@ declare module "http2" {
     exclusive?: boolean;
     parent?: number;
     weight?: number;
-    getTrailers?: (trailers: Headers, flags: number) => void;
+    getTrailers?: (trailers: IncomingHttpHeaders, flags: number) => void;
   }
 
   export interface SessionShutdownOptions {
@@ -140,7 +144,7 @@ declare module "http2" {
   }
 
   export interface ClientHttp2Session extends Http2Session {
-    request(headers: Headers, options?: ClientSessionRequestOptions): ClientHttp2Stream;
+    request(headers: OutgoingHttpHeaders, options?: ClientSessionRequestOptions): ClientHttp2Stream;
   }
 
   export interface ServerHttp2Session extends Http2Session {
@@ -185,7 +189,7 @@ declare module "http2" {
 
   export interface Http2ServerRequest extends stream.Readable {
     destroy(err: Error): void;
-    headers: Headers;
+    headers: IncomingHttpHeaders;
     httpVersion: string;
     method: string;
     rawHeaders: string[];
@@ -193,14 +197,14 @@ declare module "http2" {
     setTimeout(msecs: number, callback?: () => void): void;
     socket: net.Socket | tls.TLSSocket;
     stream: ServerHttp2Stream;
-    trailers: Headers;
+    trailers: IncomingHttpHeaders;
     url: string;
 
     // $ node generate-event-declarations.js Http2ServerRequest
   }
 
   export interface Http2ServerResponse extends events.EventEmitter {
-    addTrailers(trailers: Headers): void;
+    addTrailers(trailers: OutgoingHttpHeaders): void;
     connection: net.Socket | tls.TLSSocket;
     end(callback?: () => void): void;
     end(data?: string | Buffer, callback?: () => void): void;
@@ -208,12 +212,12 @@ declare module "http2" {
     finished: boolean;
     getHeader(name: string): string;
     getHeaderNames(): string[];
-    getHeaders(): Headers;
+    getHeaders(): OutgoingHttpHeaders;
     hasHeader(name: string): boolean;
     readonly headersSent: boolean;
     removeHeader(name: string): void;
     sendDate: boolean;
-    setHeader(name: string, value: string | string[]): void;
+    setHeader(name: string, value: number | string | string[]): void;
     setTimeout(msecs: number, callback?: () => void): void;
     socket: net.Socket | tls.TLSSocket;
     statusCode: number;
@@ -222,9 +226,9 @@ declare module "http2" {
     write(chunk: string | Buffer, callback?: (err: Error) => void): boolean;
     write(chunk: string | Buffer, encoding?: string, callback?: (err: Error) => void): boolean;
     writeContinue(): void;
-    writeHead(statusCode: number, headers?: Headers): void;
-    writeHead(statusCode: number, statusMessage?: string, headers?: Headers): void;
-    createPushResponse(headers: Headers, callback?: (err: Error) => void): void;
+    writeHead(statusCode: number, headers?: OutgoingHttpHeaders): void;
+    writeHead(statusCode: number, statusMessage?: string, headers?: OutgoingHttpHeaders): void;
+    createPushResponse(headers: OutgoingHttpHeaders, callback?: (err: Error) => void): void;
 
     // $ node generate-event-declarations.js Http2ServerResponse
   }
@@ -233,7 +237,7 @@ declare module "http2" {
   // Public API
   ////////////////////////////////////////////////////////////////
 
-  // $ echo '$NODE_H2 --expose-http2 generate-constants.js' | bash
+  // $ node --expose-http2 generate-constants.js
 
   export function getDefaultSettings(): Settings;
   export function getPackedSettings(): Settings;

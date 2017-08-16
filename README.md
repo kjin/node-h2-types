@@ -2,6 +2,16 @@
 
 Work-in-progress repository containing type definitions for the nascent `http2` module in Node.js.
 
+## "Building"
+
+Node 8.4+ required.
+
+```
+./bake [-e]
+```
+
+This generates `index.d.ts`. `-e` appends to latest `@types/node` definitions.
+
 ## Quick links
 
 * [`http2` Docs](https://nodejs.org/api/http2.html)
