@@ -109,7 +109,7 @@ declare module "http2" {
     graceful?: boolean;
     errorCode?: number;
     lastStreamID?: number;
-    opaqueData?: Buffer | number[];
+    opaqueData?: Buffer | Uint8Array;
   }
 
   export interface SessionState {
@@ -144,11 +144,15 @@ declare module "http2" {
   }
 
   export interface ClientHttp2Session extends Http2Session {
-    request(headers: OutgoingHttpHeaders, options?: ClientSessionRequestOptions): ClientHttp2Stream;
+    request(headers?: OutgoingHttpHeaders, options?: ClientSessionRequestOptions): ClientHttp2Stream;
+
+    // $ node generate-event-declarations.js ClientHttp2Session
   }
 
   export interface ServerHttp2Session extends Http2Session {
     readonly server: Http2Server | Http2SecureServer;
+
+    // $ node generate-event-declarations.js ServerHttp2Session
   }
 
   ////////////////////////////////////////////////////////////////

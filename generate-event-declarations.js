@@ -3,15 +3,21 @@ const [_bin, _script, cliArg] = process.argv
 const eventObjects = {
   Http2Session: [
     { event: 'close', args: [] },
-    { event: 'connect', args: ['session: ClientHttp2Session', 'socket: net.Socket | tls.TLSSocket'] },
     { event: 'error', args: ['err: Error'] },
     { event: 'frameError', args: ['frameType: number', 'errorCode: number', 'streamID: number'] },
     { event: 'goaway', args: ['errorCode: number', 'lastStreamID: number', 'opaqueData: Buffer'] },
     { event: 'localSettings', args: ['settings: Settings'] },
     { event: 'remoteSettings', args: ['settings: Settings'] },
-    { event: 'stream', args: ['stream: Http2Stream', 'headers: IncomingHttpHeaders', 'flags: number'] },
     { event: 'socketError', args: ['err: Error'] },
     { event: 'timeout', args: [] }
+  ],
+  ClientHttp2Session: [
+    { event: 'connect', args: ['session: ClientHttp2Session', 'socket: net.Socket | tls.TLSSocket'] },
+    { event: 'stream', args: ['stream: ClientHttp2Stream', 'headers: IncomingHttpHeaders', 'flags: number'] }
+  ],
+  ServerHttp2Session: [
+    { event: 'connect', args: ['session: ServerHttp2Session', 'socket: net.Socket | tls.TLSSocket'] },
+    { event: 'stream', args: ['stream: ServerHttp2Stream', 'headers: IncomingHttpHeaders', 'flags: number'] }
   ],
   Http2Stream: [
     { event: 'aborted', args: [] },
