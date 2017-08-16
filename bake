@@ -4,7 +4,7 @@ const [ _bin, _script, flag ] = process.argv
 const { readFileSync, writeFileSync } = require('fs')
 const { execSync } = require('child_process')
 
-const http2Dts = readFileSync('_index.d.ts', 'utf8')
+const http2Dts = readFileSync('index.d.ts.template', 'utf8')
   .split('\n')
   .map(line => {
     const matches = line.match(/(\s+)\/\/\s\$\s(.*)/)
