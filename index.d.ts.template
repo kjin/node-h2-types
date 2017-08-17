@@ -76,8 +76,8 @@ declare module "http2" {
     pushStream(headers: OutgoingHttpHeaders, callback?: (pushStream: ServerHttp2Stream) => void): void;
     pushStream(headers: OutgoingHttpHeaders, options?: StreamPriorityOptions, callback?: (pushStream: ServerHttp2Stream) => void): void;
     respond(headers?: OutgoingHttpHeaders, options?: ServerStreamResponseOptions): void;
-    respondWithFD(fd: number, headers?: OutgoingHttpHeaders, options?: ServerStreamResponseOptions): void;
-    respondWithFD(path: string, headers?: OutgoingHttpHeaders, options?: ServerStreamResponseOptions): void;
+    respondWithFD(fd: number, headers?: OutgoingHttpHeaders, options?: ServerStreamFileResponseOptions): void;
+    respondWithFile(path: string, headers?: OutgoingHttpHeaders, options?: ServerStreamFileResponseOptions): void;
   }
 
   ////////////////////////////////////////////////////////////////

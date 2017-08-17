@@ -1,32 +1,34 @@
 import * as events from 'events';
+import * as fs from 'fs';
 import * as http2 from 'http2';
 import * as net from 'net';
+import * as stream from 'stream';
 import * as tls from 'tls';
 import * as url from 'url';
 
 namespace http2_tests {
   // Http2Session
   {
-    let session: http2.Http2Session;
-    let ee: events.EventEmitter = session;
+    let http2Session: http2.Http2Session;
+    let ee: events.EventEmitter = http2Session;
 
-    session.on('close', () => {});
-    session.on('connect', (session: http2.Http2Session, socket: net.Socket) => {});
-    session.on('error', (err: Error) => {});
-    session.on('frameError', (frameType: number, errorCode: number, streamID: number) => {});
-    session.on('goaway', (errorCode: number, lastStreamID: number, opaqueData: Buffer) => {});
-    session.on('localSettings', (settings: http2.Settings) => {});
-    session.on('remoteSettings', (settings: http2.Settings) => {});
-    session.on('stream', (stream: http2.Http2Stream, headers: http2.IncomingHttpHeaders, flags: number) => {});
-    session.on('socketError', (err: Error) => {});
-    session.on('timeout', () => {});
+    http2Session.on('close', () => {});
+    http2Session.on('connect', (session: http2.Http2Session, socket: net.Socket) => {});
+    http2Session.on('error', (err: Error) => {});
+    http2Session.on('frameError', (frameType: number, errorCode: number, streamID: number) => {});
+    http2Session.on('goaway', (errorCode: number, lastStreamID: number, opaqueData: Buffer) => {});
+    http2Session.on('localSettings', (settings: http2.Settings) => {});
+    http2Session.on('remoteSettings', (settings: http2.Settings) => {});
+    http2Session.on('stream', (stream: http2.Http2Stream, headers: http2.IncomingHttpHeaders, flags: number) => {});
+    http2Session.on('socketError', (err: Error) => {});
+    http2Session.on('timeout', () => {});
 
-    session.destroy();
+    http2Session.destroy();
 
-    let destroyed: boolean = session.destroyed;
-    let pendingSettingsAck: boolean = session.pendingSettingsAck;
-    let settings: http2.Settings = session.localSettings;
-    settings = session.remoteSettings;
+    let destroyed: boolean = http2Session.destroyed;
+    let pendingSettingsAck: boolean = http2Session.pendingSettingsAck;
+    let settings: http2.Settings = http2Session.localSettings;
+    settings = http2Session.remoteSettings;
     settings = {
       headerTableSize: 0,
       enablePush: true,
@@ -49,15 +51,15 @@ namespace http2_tests {
       weight: 0,
       getTrailers: (trailers: http2.IncomingHttpHeaders) => {}
     };
-    (session as http2.ClientHttp2Session).request();
-    (session as http2.ClientHttp2Session).request(headers);
-    (session as http2.ClientHttp2Session).request(headers, options);
+    (http2Session as http2.ClientHttp2Session).request();
+    (http2Session as http2.ClientHttp2Session).request(headers);
+    (http2Session as http2.ClientHttp2Session).request(headers, options);
 
     let stream: http2.Http2Stream;
-    session.rstStream(stream);
-    session.rstStream(stream, 0);
+    http2Session.rstStream(stream);
+    http2Session.rstStream(stream, 0);
 
-    session.setTimeout(100, () => {});
+    http2Session.setTimeout(100, () => {});
 
     let shutdownOptions: http2.SessionShutdownOptions = {
       graceful: true,
@@ -66,11 +68,11 @@ namespace http2_tests {
       opaqueData: Buffer.from([])
     };
     shutdownOptions.opaqueData = Uint8Array.from([]);
-    session.shutdown(shutdownOptions);
-    session.shutdown(shutdownOptions, () => {});
+    http2Session.shutdown(shutdownOptions);
+    http2Session.shutdown(shutdownOptions, () => {});
 
-    let socket: net.Socket | tls.TLSSocket = session.socket;
-    let state: http2.SessionState = session.state;
+    let socket: net.Socket | tls.TLSSocket = http2Session.socket;
+    let state: http2.SessionState = http2Session.state;
     state = {
       effectiveLocalWindowSize: 0,
       effectiveRecvDataLength: 0,
@@ -83,13 +85,94 @@ namespace http2_tests {
       inflateDynamicTableSize: 0
     };
 
-    session.priority(stream, {
+    http2Session.priority(stream, {
       exclusive: true,
       parent: 0,
       weight: 0,
       silent: true
     });
 
-    session.settings(settings);
+    http2Session.settings(settings);
+  }
+
+  // Http2Stream
+  {
+    let http2Stream: http2.Http2Stream;
+    let duplex: stream.Duplex = http2Stream;
+
+    http2Stream.on('aborted', () => {});
+    http2Stream.on('error', (err: Error) => {});
+    http2Stream.on('frameError', (frameType: number, errorCode: number, streamID: number) => {});
+    http2Stream.on('streamClosed', (code: number) => {});
+    http2Stream.on('timeout', () => {});
+    http2Stream.on('trailers', (trailers: http2.IncomingHttpHeaders, flags: number) => {});
+
+    let aborted: boolean = http2Stream.aborted;
+    let destroyed: boolean = http2Stream.destroyed;
+
+    http2Stream.priority({
+      exclusive: true,
+      parent: 0,
+      weight: 0,
+      silent: true
+    });
+
+    let rstCode: number = http2Stream.rstCode;
+    http2Stream.rstStream(rstCode);
+    http2Stream.rstWithNoError();
+    http2Stream.rstWithProtocolError();
+    http2Stream.rstWithCancel();
+    http2Stream.rstWithRefuse();
+    http2Stream.rstWithInternalError();
+
+    let sesh: http2.Http2Session = http2Stream.session;
+
+    http2Stream.setTimeout(100, () => {});
+
+    let state: http2.StreamState = http2Stream.state;
+    state = {
+      localWindowSize: 0,
+      state: 0,
+      streamLocalClose: 0,
+      streamRemoteClose: 0,
+      sumDependencyWeight: 0,
+      weight: 0
+    };
+
+    // ClientHttp2Stream
+    let clientHttp2Stream: http2.ClientHttp2Stream;
+    clientHttp2Stream.on('headers', (headers: http2.IncomingHttpHeaders, flags: number) => {});
+    clientHttp2Stream.on('push', (headers: http2.IncomingHttpHeaders, flags: number) => {});
+    clientHttp2Stream.on('response', (headers: http2.IncomingHttpHeaders, flags: number) => {});
+
+    // ServerHttp2Stream
+    let serverHttp2Stream: http2.ServerHttp2Stream;
+    let headers: http2.OutgoingHttpHeaders;
+
+    serverHttp2Stream.additionalHeaders(headers);
+    let headerSent: boolean = serverHttp2Stream.headersSent;
+    let pushAllowed: boolean = serverHttp2Stream.pushAllowed;
+    serverHttp2Stream.pushStream(headers, (pushStream: http2.ServerHttp2Stream) => {});
+
+    let options: http2.ServerStreamResponseOptions = {
+      endStream: true,
+      getTrailers: (trailers: http2.IncomingHttpHeaders) => {}
+    };
+    serverHttp2Stream.respond();
+    serverHttp2Stream.respond(headers);
+    serverHttp2Stream.respond(headers, options);
+
+    let options2: http2.ServerStreamFileResponseOptions = {
+      statCheck: (stats: fs.Stats, headers: http2.IncomingHttpHeaders, statOptions: http2.StatOptions) => {},
+      getTrailers: (trailers: http2.IncomingHttpHeaders) => {},
+      offset: 0,
+      length: 0
+    };
+    serverHttp2Stream.respondWithFD(0);
+    serverHttp2Stream.respondWithFD(0, headers);
+    serverHttp2Stream.respondWithFD(0, headers, options2);
+    serverHttp2Stream.respondWithFile('');
+    serverHttp2Stream.respondWithFile('', headers);
+    serverHttp2Stream.respondWithFile('', headers, options2);
   }
 }

@@ -21,7 +21,15 @@ const eventObjects = {
   ],
   Http2Stream: [
     { event: 'aborted', args: [] },
+    { event: 'close', args: [] },
+    { event: 'data', args: ['chunk: Buffer | string'] },
+    { event: 'drain', args: [] },
+    { event: 'end', args: [] },
+    { event: 'error', args: ['err: Error'] },
+    { event: 'finish', args: [] },
     { event: 'frameError', args: ['frameType: number', 'errorCode: number'] },
+    { event: 'pipe', args: ['src: stream.Readable'] },
+    { event: 'unpipe', args: ['src: stream.Readable'] },
     { event: 'streamClosed', args: ['code: number'] },
     { event: 'timeout', args: [] },
     { event: 'trailers', args: ['trailers: IncomingHttpHeaders', 'flags: number'] }
