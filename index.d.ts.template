@@ -1,18 +1,14 @@
 declare module "http2" {
   import * as events from "events";
   import * as fs from "fs";
+  import * as http from "http";
   import * as net from "net";
   import * as stream from "stream";
   import * as tls from "tls";
   import * as url from "url";
 
-  export interface IncomingHttpHeaders {
-    [headerField: string]: string | string[];
-  }
-  
-  export interface OutgoingHttpHeaders {
-    [headerField: string]: number | string | string[] | undefined;
-  }
+  export interface IncomingHttpHeaders extends http.IncomingHttpHeaders {}
+  export interface OutgoingHttpHeaders extends http.OutgoingHttpHeaders {}
 
   ////////////////////////////////////////////////////////////////
   // Http2Stream
@@ -169,11 +165,11 @@ declare module "http2" {
     settings?: Settings;
   }
 
-  export type ClientSessionOptions = SessionOptions;
-  export type ServerSessionOptions = SessionOptions;
+  export interface ClientSessionOptions extends SessionOptions {}
+  export interface ServerSessionOptions extends SessionOptions {}
 
-  export type SecureClientSessionOptions = ClientSessionOptions & tls.ConnectionOptions;
-  export type SecureServerSessionOptions = ClientSessionOptions & tls.TlsOptions;
+  export interface SecureClientSessionOptions extends ClientSessionOptions, tls.ConnectionOptions {}
+  export interface SecureServerSessionOptions extends ClientSessionOptions, tls.TlsOptions {}
 
   export interface ServerOptions extends ServerSessionOptions {
     allowHTTP1?: boolean;
