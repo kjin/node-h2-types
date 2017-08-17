@@ -175,4 +175,75 @@ namespace http2_tests {
     serverHttp2Stream.respondWithFile('', headers);
     serverHttp2Stream.respondWithFile('', headers, options2);
   }
+
+  // Http2Server / Http2SecureServer
+  {
+    let http2Server: http2.Http2Server;
+    let http2SecureServer: http2.Http2SecureServer;
+    let s1: net.Server = http2Server;
+    let s2: tls.Server = http2SecureServer;
+    [http2Server, http2SecureServer].forEach((server) => {
+      server.on('sessionError', (err: Error) => {});
+      server.on('socketError', (err: Error) => {});
+      server.on('stream', (stream: http2.ServerHttp2Stream, headers: http2.IncomingHttpHeaders, flags: number) => {});
+      server.on('request', (request: http2.Http2ServerRequest, response: http2.Http2ServerResponse) => {});
+      server.on('timeout', () => {});
+    });
+
+    http2SecureServer.on('unknownProtocol', (socket: tls.TLSSocket) => {});
+  }
+
+  // Public API (except constants)
+  {
+
+    let settings: http2.Settings;
+    let serverOptions: http2.ServerOptions = {
+      maxDeflateDynamicTableSize: 0,
+      maxReservedRemoteStreams: 0,
+      maxSendHeaderBlockLength: 0,
+      paddingStrategy: 0,
+      peerMaxConcurrentStreams: 0,
+      selectPadding: (frameLen: number, maxFrameLen: number) => 0,
+      settings: settings,
+      allowHTTP1: true
+    };
+    let secureServerOptions: http2.SecureServerOptions = Object.assign(serverOptions);
+    secureServerOptions.ca = '';
+    let onRequestHandler = (request: http2.Http2ServerRequest, response: http2.Http2ServerResponse) => {};
+
+    let http2Server: http2.Http2Server;
+    let http2SecureServer: http2.Http2SecureServer;
+
+    http2Server = http2.createServer();
+    http2Server = http2.createServer(serverOptions);
+    http2Server = http2.createServer(onRequestHandler);
+    http2Server = http2.createServer(serverOptions, onRequestHandler);
+
+    http2SecureServer = http2.createSecureServer();
+    http2SecureServer = http2.createSecureServer(secureServerOptions);
+    http2SecureServer = http2.createSecureServer(onRequestHandler);
+    http2SecureServer = http2.createSecureServer(secureServerOptions, onRequestHandler);
+
+    let clientSessionOptions: http2.ClientSessionOptions = {
+      maxDeflateDynamicTableSize: 0,
+      maxReservedRemoteStreams: 0,
+      maxSendHeaderBlockLength: 0,
+      paddingStrategy: 0,
+      peerMaxConcurrentStreams: 0,
+      selectPadding: (frameLen: number, maxFrameLen: number) => 0,
+      settings: settings
+    };
+    let secureClientSessionOptions: http2.SecureClientSessionOptions = Object.assign(clientSessionOptions);
+    secureClientSessionOptions.ca = '';
+    let onConnectHandler = (session: http2.Http2Session, socket: net.Socket) => {};
+
+    let clientHttp2Session: http2.ClientHttp2Session;
+
+    clientHttp2Session = http2.connect('');
+    clientHttp2Session = http2.connect('', onConnectHandler);
+    clientHttp2Session = http2.connect('', clientSessionOptions);
+    clientHttp2Session = http2.connect('', clientSessionOptions, onConnectHandler);
+    clientHttp2Session = http2.connect('', secureClientSessionOptions);
+    clientHttp2Session = http2.connect('', secureClientSessionOptions, onConnectHandler);
+  }
 }

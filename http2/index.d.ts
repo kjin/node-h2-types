@@ -381,13 +381,13 @@ declare module "http2" {
     export interface ServerSessionOptions extends SessionOptions {}
 
     export interface SecureClientSessionOptions extends ClientSessionOptions, tls.ConnectionOptions {}
-    export interface SecureServerSessionOptions extends ClientSessionOptions, tls.TlsOptions {}
+    export interface SecureServerSessionOptions extends ServerSessionOptions, tls.TlsOptions {}
 
     export interface ServerOptions extends ServerSessionOptions {
         allowHTTP1?: boolean;
     }
 
-    export interface SecureServerOptions extends ServerSessionOptions {
+    export interface SecureServerOptions extends SecureServerSessionOptions {
         allowHTTP1?: boolean;
     }
 
@@ -807,8 +807,8 @@ declare module "http2" {
     export function createServer(onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2Server;
     export function createServer(options: ServerOptions, onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2Server;
 
-    export function createSecureServer(onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2Server;
-    export function createSecureServer(options: SecureServerOptions, onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2Server;
+    export function createSecureServer(onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2SecureServer;
+    export function createSecureServer(options: SecureServerOptions, onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2SecureServer;
 
     export function connect(authority: string | url.URL, listener?: (session: ClientHttp2Session, socket: net.Socket | tls.TLSSocket) => void): ClientHttp2Session;
     export function connect(authority: string | url.URL, options?: ClientSessionOptions | SecureClientSessionOptions, listener?: (session: ClientHttp2Session, socket: net.Socket | tls.TLSSocket) => void): ClientHttp2Session;
