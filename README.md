@@ -7,10 +7,12 @@ Work-in-progress repository containing type definitions for the nascent `http2` 
 Node 8.4+ required.
 
 ```
-./bake [-e]
+./bake
 ```
 
-This generates `index.d.ts`. `-e` appends to latest `@types/node` definitions.
+This generates `http2/index.d.ts`.
+
+Adding `-e` appends to latest `@types/node` definitions, and writes to `index.d.ts` instead.
 
 ## Quick links
 

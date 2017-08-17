@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 const [ _bin, _script, flag ] = process.argv
 
-const { readFileSync, writeFileSync } = require('fs')
+const { existsSync, mkdirSync, readFileSync, writeFileSync } = require('fs')
 const { execSync } = require('child_process')
 
 const http2Dts = readFileSync('index.d.ts.template', 'utf8')
@@ -39,5 +39,8 @@ if (flag === '-e') {
     execSync(`curl ${defTypedRemotePrefix}/${suffix}`)
   writeFileSync('index.d.ts', [nodeDts, http2Dts].join('\n'), 'utf8')
 } else {
-  writeFileSync('index.d.ts', http2Dts, 'utf8')
+  if (!existsSync('http2')) {
+    mkdirSync('http2')
+  }
+  writeFileSync('http2/index.d.ts', http2Dts, 'utf8')
 }

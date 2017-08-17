@@ -2,6 +2,6 @@
   "name": "h2-types",
   "version": "0.1.0",
   "files": [
-    "index.d.ts"
+    "http2/index.d.ts"
   ]
 }
