@@ -7,6 +7,25 @@ import * as tls from 'tls';
 import * as url from 'url';
 
 namespace http2_tests {
+  // Headers & Settings
+  {
+    let headers: http2.OutgoingHttpHeaders = {
+      ':status': 200,
+      'content-type': 'text-plain',
+      'ABC': ['has', 'more', 'than', 'one', 'value'],
+      undef: undefined
+    };
+
+    let settings: http2.Settings = {
+      headerTableSize: 0,
+      enablePush: true,
+      initialWindowSize: 0,
+      maxFrameSize: 0,
+      maxConcurrentStreams: 0,
+      maxHeaderListSize: 0
+    };
+  }
+
   // Http2Session
   {
     let http2Session: http2.Http2Session;
@@ -29,21 +48,8 @@ namespace http2_tests {
     let pendingSettingsAck: boolean = http2Session.pendingSettingsAck;
     let settings: http2.Settings = http2Session.localSettings;
     settings = http2Session.remoteSettings;
-    settings = {
-      headerTableSize: 0,
-      enablePush: true,
-      initialWindowSize: 0,
-      maxFrameSize: 0,
-      maxConcurrentStreams: 0,
-      maxHeaderListSize: 0
-    };
 
-    let headers: http2.OutgoingHttpHeaders = {
-      ':status': 200,
-      single: '',
-      list: ['', ''],
-      undef: undefined
-    };
+    let headers: http2.OutgoingHttpHeaders;
     let options: http2.ClientSessionRequestOptions = {
       endStream: true,
       exclusive: true,
@@ -209,7 +215,79 @@ namespace http2_tests {
     };
     let secureServerOptions: http2.SecureServerOptions = Object.assign(serverOptions);
     secureServerOptions.ca = '';
-    let onRequestHandler = (request: http2.Http2ServerRequest, response: http2.Http2ServerResponse) => {};
+    let onRequestHandler = (request: http2.Http2ServerRequest, response: http2.Http2ServerResponse) => {
+      // Http2ServerRequest
+
+      let readable: stream.Readable = request;
+      let incomingHeaders: http2.IncomingHttpHeaders = request.headers;
+      incomingHeaders = request.trailers;
+      let httpVersion: string = request.httpVersion;
+      let method: string = request.method;
+      let rawHeaders: string[] = request.rawHeaders;
+      rawHeaders = request.rawTrailers;
+      let socket: net.Socket | tls.TLSSocket = request.socket;
+      let stream: http2.ServerHttp2Stream = request.stream;
+      let url: string = request.url;
+
+      request.setTimeout(0, () => {});
+      request.on('aborted', (hadError: boolean, code: number) => {});
+
+      // Http2ServerResponse
+
+      let outgoingHeaders: http2.OutgoingHttpHeaders;
+      response.addTrailers(outgoingHeaders);
+      socket = response.connection;
+      let finished: boolean = response.finished;
+      response.sendDate = true;
+      response.statusCode = 200;
+      response.statusMessage = '';
+      socket = response.socket;
+      stream = response.stream;
+
+      method = response.getHeader(':method');
+      let headers: string[] = response.getHeaderNames();
+      outgoingHeaders = response.getHeaders();
+      let hasMethod = response.hasHeader(':method');
+      response.removeHeader(':method');
+      response.setHeader(':method', 'GET');
+      response.setHeader(':status', 200);
+      response.setHeader('some-list', ['', '']);
+      let headersSent: boolean = response.headersSent;
+
+      response.setTimeout(0, () => {});
+      response.createPushResponse(outgoingHeaders);
+      response.createPushResponse(outgoingHeaders, (err: Error) => {});
+
+      response.writeContinue();
+      response.writeHead(200);
+      response.writeHead(200, outgoingHeaders);
+      response.writeHead(200, 'OK', outgoingHeaders);
+      response.writeHead(200, 'OK');
+      response.write('');
+      response.write('', (err: Error) => {});
+      response.write('', 'utf8');
+      response.write('', 'utf8', (err: Error) => {});
+      response.write(Buffer.from([]));
+      response.write(Buffer.from([]), (err: Error) => {});
+      response.write(Buffer.from([]), 'utf8');
+      response.write(Buffer.from([]), 'utf8', (err: Error) => {});
+      response.end();
+      response.end(() => {});
+      response.end('');
+      response.end('', () => {});
+      response.end('', 'utf8');
+      response.end('', 'utf8', () => {});
+      response.end(Buffer.from([]));
+      response.end(Buffer.from([]), () => {});
+      response.end(Buffer.from([]), 'utf8');
+      response.end(Buffer.from([]), 'utf8', () => {});
+
+      request.on('aborted', (hadError: boolean, code: number) => {});
+      request.on('close', () => {});
+      request.on('drain', () => {});
+      request.on('error', (error: Error) => {});
+      request.on('finish', () => {});
+    };
 
     let http2Server: http2.Http2Server;
     let http2SecureServer: http2.Http2SecureServer;
@@ -245,6 +323,11 @@ namespace http2_tests {
     clientHttp2Session = http2.connect('', clientSessionOptions, onConnectHandler);
     clientHttp2Session = http2.connect('', secureClientSessionOptions);
     clientHttp2Session = http2.connect('', secureClientSessionOptions, onConnectHandler);
+
+    settings = http2.getDefaultSettings();
+    settings = http2.getPackedSettings(settings);
+    settings = http2.getUnpackedSettings(Buffer.from([]));
+    settings = http2.getUnpackedSettings(Uint8Array.from([]));
   }
 
   // constants

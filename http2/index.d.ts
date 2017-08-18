@@ -486,7 +486,6 @@ declare module "http2" {
     }
 
     export interface Http2ServerRequest extends stream.Readable {
-        destroy(err: Error): void;
         headers: IncomingHttpHeaders;
         httpVersion: string;
         method: string;
@@ -523,7 +522,7 @@ declare module "http2" {
         end(callback?: () => void): void;
         end(data?: string | Buffer, callback?: () => void): void;
         end(data?: string | Buffer, encoding?: string, callback?: () => void): void;
-        finished: boolean;
+        readonly finished: boolean;
         getHeader(name: string): string;
         getHeaderNames(): string[];
         getHeaders(): OutgoingHttpHeaders;
@@ -801,8 +800,8 @@ declare module "http2" {
     };
 
     export function getDefaultSettings(): Settings;
-    export function getPackedSettings(): Settings;
-    export function getUnpackedSettings(): Settings;
+    export function getPackedSettings(settings: Settings): Settings;
+    export function getUnpackedSettings(buf: Buffer | Uint8Array): Settings;
 
     export function createServer(onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2Server;
     export function createServer(options: ServerOptions, onRequestHandler?: (request: Http2ServerRequest, response: Http2ServerResponse) => void): Http2Server;
