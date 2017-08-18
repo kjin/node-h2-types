@@ -5,6 +5,9 @@ import * as net from 'net';
 import * as stream from 'stream';
 import * as tls from 'tls';
 import * as url from 'url';
+///////////////////////////////////////////////////////////
+/// HTTP/2 Tests                                        ///
+///////////////////////////////////////////////////////////
 
 namespace http2_tests {
   // Headers & Settings
@@ -12,7 +15,7 @@ namespace http2_tests {
     let headers: http2.OutgoingHttpHeaders = {
       ':status': 200,
       'content-type': 'text-plain',
-      'ABC': ['has', 'more', 'than', 'one', 'value'],
+      ABC: ['has', 'more', 'than', 'one', 'value'],
       undef: undefined
     };
 
@@ -201,7 +204,6 @@ namespace http2_tests {
 
   // Public API (except constants)
   {
-
     let settings: http2.Settings;
     let serverOptions: http2.ServerOptions = {
       maxDeflateDynamicTableSize: 0,
@@ -210,7 +212,7 @@ namespace http2_tests {
       paddingStrategy: 0,
       peerMaxConcurrentStreams: 0,
       selectPadding: (frameLen: number, maxFrameLen: number) => 0,
-      settings: settings,
+      settings,
       allowHTTP1: true
     };
     let secureServerOptions: http2.SecureServerOptions = Object.assign(serverOptions);
@@ -309,7 +311,7 @@ namespace http2_tests {
       paddingStrategy: 0,
       peerMaxConcurrentStreams: 0,
       selectPadding: (frameLen: number, maxFrameLen: number) => 0,
-      settings: settings
+      settings
     };
     let secureClientSessionOptions: http2.SecureClientSessionOptions = Object.assign(clientSessionOptions);
     secureClientSessionOptions.ca = '';

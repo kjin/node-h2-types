@@ -31,13 +31,42 @@ const http2Dts = readFileSync('index.d.ts.template', 'utf8')
   .join('\n')
 
 const defTypedRemotePrefix = 'https://raw.githubusercontent.com/DefinitelyTyped/DefinitelyTyped/master'
-const suffix = 'types/node/index.d.ts'
+const dtsSuffix = 'types/node/index.d.ts'
+const testSuffix = 'types/node/node-tests.ts'
 
 if (flag === '-e') {
   const nodeDts = process.env.DEFINITELY_TYPED ?
-    execSync(`git show master:${suffix}`, { cwd: process.env.DEFINITELY_TYPED }) :
-    execSync(`curl ${defTypedRemotePrefix}/${suffix}`)
+    execSync(`git show master:${dtsSuffix}`, { cwd: process.env.DEFINITELY_TYPED }) :
+    execSync(`curl ${defTypedRemotePrefix}/${dtsSuffix}`)
   writeFileSync('index.d.ts', [nodeDts, http2Dts].join('\n'), 'utf8')
+  // Also, tests
+  const nodeTests = (process.env.DEFINITELY_TYPED ?
+    execSync(`git show master:${testSuffix}`, { cwd: process.env.DEFINITELY_TYPED }) :
+    execSync(`curl ${defTypedRemotePrefix}/${testSuffix}`))
+    .toString('utf8')
+    .split('\n')
+    .map(line => {
+      if (line.startsWith('import * as async_hooks')) {
+        return [line, 'import * as http2 from "http2";']
+      } else {
+        return [line]
+      }
+    })
+    .reduce((acc, lines) => acc.concat(lines), [])
+    .join('\n')
+  const http2Tests = readFileSync('http2-tests.ts', 'utf8')
+    .split('\n')
+    .filter(line => !line.startsWith('import *'))
+    .map(line => {
+      const matches = line.match(/^(\s+)[^\s]/)
+      if (!matches) {
+        return line
+      }
+      const [_0, indent] = matches
+      return indent + line
+    })
+    .join('\n')
+  writeFileSync('node-tests.ts', [nodeTests, http2Tests].join('\n'), 'utf8');
 } else {
   if (!existsSync('http2')) {
     mkdirSync('http2')
